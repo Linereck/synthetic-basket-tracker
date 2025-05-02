@@ -1,0 +1,3 @@
+[submodule "data/cns-fails-to-deliver"]
+	path = data/cns-fails-to-deliver
+	url = https://github.com/Linereck/cns-fails-to-deliver

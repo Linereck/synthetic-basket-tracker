@@ -37,6 +37,27 @@ Visualize when multiple tickers have overlapping FTD closing deadlines.
 - Color-coded days with major deadline clusters
 - Optional countdown clock for next big compression window
 
+Initial ftd_heatmap.py implementation plots a FTD Volume heatmap
+
+![image](https://github.com/user-attachments/assets/3eca765e-56e7-4e5f-a8bc-deecc06eac81)
+
+```
+python ftd_heatmap.py \
+data/cns-fails-to-deliver/sec_fails_to_deliver_all.csv \
+-t GME XRT CHWY KOSS \
+--freq W
+```
+
+![image](https://github.com/user-attachments/assets/b0bfde8e-ac3b-409c-8762-f6f5504696fd)
+
+```
+python ftd_heatmap.py \
+data/cns-fails-to-deliver/sec_fails_to_deliver_all.csv \
+-t GME XRT CHWY KOSS \
+--freq D \
+--log \
+--from 2023-01-01 --to 2025-05-01
+```
 ---
 
 ### 3. Synthetic Pressure Score

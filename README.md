@@ -4,11 +4,20 @@
 
 ## Overview
 
-This project maps relationships between GME and its wrapper instruments (e.g., XRT, CHWY, BABA) by joining:
+This project maps relationships between GME, its wrapper instruments, and its basket peers by joining:
 
 - SEC CNS failures-to-deliver (2019 to present, consolidated in the
   [cns-fails-to-deliver](https://github.com/Linereck/cns-fails-to-deliver) data repository)
 - Reg SHO threshold-list membership from NYSE, NASDAQ, and CBOE (`data/regsho/`)
+
+Two kinds of related instruments, deliberately kept distinct:
+
+- **Wrappers** are containers that hold GME exposure (ETFs such as XRT or IWM). Fails can
+  migrate into them, because creating or redeeming the wrapper is an alternative way to
+  settle - or roll - the underlying obligation.
+- **Basket peers** are individual stocks (e.g., CHWY, KOSS, BABA) believed to sit in the
+  same short baskets or swaps as GME. They cannot absorb GME's fails, but they fail and
+  move in sync with it when the same books roll the same settlement clocks.
 
 The goal is to uncover synthetic basket activity, predict unwind windows, and provide timing signals for potential short pressure events.
 

@@ -4,7 +4,7 @@
 # Plot a fails‑to‑deliver heat‑map for selected tickers over a chosen period.
 #
 # EXAMPLE
-#   python ftd_heatmap.py sec_ftd.csv              \
+#   python ftd_heatmap.py data/cns-fails-to-deliver/sec_fails_to_deliver_all.csv              \
 #       -t GME XRT BABA CHWY KOSS                  \
 #       --freq W --log                             \
 #       --from 2021‑01‑01 --to 2023‑12‑31          \

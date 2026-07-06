@@ -1,110 +1,67 @@
 # Synthetic Short Basket Tracker
 
-**Identify & monitor synthetic short exposure through FTD clustering, timing convergence, and systemic basket risk.**
+**Identify and monitor synthetic short exposure through FTD clustering, timing convergence, and systemic basket risk.**
 
 ## Overview
 
-This tool maps relationships between GME and other tickers (e.g., CHWY, XRT, BABA) by analyzing:
+This project maps relationships between GME and its wrapper instruments (e.g., XRT, CHWY, BABA) by joining:
 
-- Failures-to-Deliver (FTDs)
-- Borrow data
-- Options positioning
+- SEC CNS failures-to-deliver (2019 to present, consolidated in the
+  [cns-fails-to-deliver](https://github.com/Linereck/cns-fails-to-deliver) data repository)
+- Reg SHO threshold-list membership from NYSE, NASDAQ, and CBOE (`data/regsho/`)
 
 The goal is to uncover synthetic basket activity, predict unwind windows, and provide timing signals for potential short pressure events.
 
----
+## Published analysis
 
-## Core Features
+Interactive results, hosted from this repository via GitHub Pages:
 
-### 1. FTD Clustering Engine
+- **[Interactive exhibits](https://linereck.github.io/synthetic-short-basket-tracker/exhibits.html)** -
+  the January 2021 GME-to-XRT fails handoff, six years of XRT threshold-list residencies,
+  the inverted close-out cliff, and a conditional forecast of the live residency.
+- **[Findings report](https://linereck.github.io/synthetic-short-basket-tracker/report.html)** -
+  the written analysis: what the data proves and cannot prove, the 2024 echo, and the
+  design of an event-conditioned predictive model.
 
-Identify tickers that repeatedly fail-to-deliver in sync with GME.
+Headline findings so far:
 
-- Parse SEC FTD data across 100+ tickers
-- Align tickers by T+35 closing deadlines (not just trade dates)
-- Group tickers that:
-  - Fail to deliver in the same 5–7 day window as GME
-  - Show high FTD volumes (>50K+)
-- **Output:** Top tickers clustered with GME, ranked by frequency and total $ notional
+- XRT sat on the Reg SHO threshold list for 37% of all trading days since October 2019;
+  its longest residency ran at least 187 days against a rule designed to force exit in 13.
+- January 2021: GME fails peak on the 26th, the buy button dies on the 28th, XRT posts its
+  own fails peak and enters the threshold list on the 29th; GME leaves the list on
+  February 3rd and has not returned since.
+- Fails are suppressed at residency tails (to satisfy the 5-clean-day exit test) and
+  explode up to 85x within five days of exiting: deliveries track the rule's measurement
+  windows, not economic settlement.
 
----
-
-### 2. T+35 Convergence Heatmap
-
-Visualize when multiple tickers have overlapping FTD closing deadlines.
-
-- Calendar view showing how many securities have T+35s falling on each day
-- Color-coded days with major deadline clusters
-- Optional countdown clock for next big compression window
-
-Initial ftd_heatmap.py implementation plots a FTD Volume heatmap
-
-![image](https://github.com/user-attachments/assets/3eca765e-56e7-4e5f-a8bc-deecc06eac81)
+## Repository layout
 
 ```
-python ftd_heatmap.py \
-data/cns-fails-to-deliver/sec_fails_to_deliver_all.csv \
--t GME XRT CHWY KOSS \
---freq W
+docs/                      GitHub Pages site (exhibits, report)
+analysis/                  extraction scripts that regenerate the exhibit data
+data/cns-fails-to-deliver  FTD dataset (git submodule, CSV in Git LFS)
+data/regsho                threshold-list CSVs (NYSE, NASDAQ, CBOE)
+ftd_heatmap.py             FTD volume heatmap for a basket of tickers
 ```
 
-![image](https://github.com/user-attachments/assets/b0bfde8e-ac3b-409c-8762-f6f5504696fd)
+## Reproducing
 
 ```
-python ftd_heatmap.py \
-data/cns-fails-to-deliver/sec_fails_to_deliver_all.csv \
--t GME XRT CHWY KOSS \
---freq D \
---log \
---from 2023-01-01 --to 2025-05-01
-```
----
-
-### 3. Synthetic Pressure Score
-
-Daily score estimating risk of systemic unwind.
-
-Factors considered:
-
-- FTD volume & recency
-- CTB (Cost to Borrow) changes (scraped)
-- ETF inflows/outflows (e.g., XRT, IWM)
-- Options gamma exposure near current price
-
-**Output:**  
-0–100 risk score, calculated per ticker or basket
-
----
-
-## Suggested File Structure
+git clone --recurse-submodules https://github.com/Linereck/synthetic-short-basket-tracker
+# or skip LFS and fetch the CSV from the data repo's releases:
+#   download sec_fails_to_deliver_all.csv.gz, gunzip into data/cns-fails-to-deliver/
+pip install -r requirements.txt
+python analysis/extract_exhibit_data.py > exhibits.json
+python ftd_heatmap.py data/cns-fails-to-deliver/sec_fails_to_deliver_all.csv -t GME XRT CHWY --freq W --log
 ```
 
-├── data/
-│   ├── ftd_raw
-│   ├── etf_holdings
-│   ├── borrow_rates
-├── scripts/
-│   ├── parse_ftd.py
-│   ├── calc_t35_windows.py
-│   ├── cluster_engine.py
-│   ├── gamma_analysis.py
-│   ├── scrape_ctb.py
-├── outputs/
-│   ├── cluster_heatmap.csv
-│   ├── ticker_risk_scores.json
-├── root_files/
-│   ├── dashboard.py
-│   ├── README.md
-```
----
+## Roadmap
 
-## Stretch Goals
-
-- Pull historical price action and overlay vs FTD cycles
-- Add chart annotations for T+35 windows
-- Live alerts for new FTD spikes or borrow fee surges
-
----
+- FTD clustering engine: group tickers failing in sync with GME, ranked by frequency and notional
+- T+35 convergence heatmap: calendar view of overlapping close-out deadlines
+- Synthetic pressure score: daily 0-100 risk score per ticker or basket from FTD volume,
+  cost-to-borrow, ETF flows, and gamma exposure
+- Historical price overlay against FTD cycles; alerts for new FTD spikes and borrow-fee surges
 
 ## License
 

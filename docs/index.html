@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synthetic Short Basket Tracker</title>
+<style>
+  :root {
+    --plane: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+    --ink-3: #898781; --border: rgba(11,11,11,0.10); --acc: #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --plane: #0d0d0d; --surface: #1a1a19; --ink: #f2f2ef; --ink-2: #c3c2b7;
+            --border: rgba(255,255,255,0.10); --acc: #3987e5; }
+  }
+  body { margin: 0; padding: 56px 20px; background: var(--plane); color: var(--ink);
+         font: 15.5px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .col { max-width: 680px; margin: 0 auto; }
+  .eyebrow { font: 11px ui-monospace, Menlo, Consolas, monospace; letter-spacing: .14em;
+             text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-size: 28px; font-weight: 750; letter-spacing: -.015em; margin: 6px 0 10px; }
+  p.lede { color: var(--ink-2); max-width: 62ch; margin: 0 0 30px; }
+  a.card { display: block; background: var(--surface); border: 1px solid var(--border);
+           border-radius: 2px; padding: 18px 20px; margin: 12px 0; text-decoration: none;
+           color: var(--ink); }
+  a.card:hover { border-color: var(--acc); }
+  a.card .t { font-weight: 700; font-size: 17px; }
+  a.card .d { color: var(--ink-2); font-size: 14px; margin-top: 4px; }
+  .links { margin-top: 28px; font-size: 13.5px; color: var(--ink-3); }
+  .links a { color: var(--acc); }
+</style>
+</head>
+<body>
+<div class="col">
+  <div class="eyebrow">settlement forensics · sec ftd data × reg sho threshold lists</div>
+  <h1>Synthetic Short Basket Tracker</h1>
+  <p class="lede">Research into fails-to-deliver behavior in GME and its wrapper instruments
+     (XRT and the synthetic basket), built on six years of SEC CNS data joined with
+     NYSE/NASDAQ/CBOE Reg SHO threshold lists.</p>
+
+  <a class="card" href="exhibits.html">
+    <div class="t">Interactive exhibits</div>
+    <div class="d">Four charts: the January 2021 GME-to-XRT handoff, six years of XRT
+      threshold-list residencies, the inverted close-out cliff, and a conditional
+      forecast of the live residency.</div>
+  </a>
+  <a class="card" href="report.html">
+    <div class="t">Findings report</div>
+    <div class="d">The written analysis: what the data proves, what it cannot, the 2024
+      echo, and the mechanics of an event-conditioned predictive model.</div>
+  </a>
+
+  <div class="links">
+    Data: <a href="https://github.com/Linereck/cns-fails-to-deliver">consolidated FTD dataset</a>
+    (grab the CSV from <a href="https://github.com/Linereck/cns-fails-to-deliver/releases">releases</a>) ·
+    Code: <a href="https://github.com/Linereck/synthetic-short-basket-tracker">this repository</a>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settlement Forensics - Findings Report</title>
+</head>
+<body style="margin:0">
+<style>
+  .rpt {
+    --plane: #f9f9f7; --surface: #fcfcfb;
+    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
+    --acc: #2a78d6; --wash: rgba(42,120,214,0.08);
+    color: var(--ink); background: var(--plane);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.62; margin: 0; padding: 48px 20px 80px;
+    font-size: 15.5px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .rpt {
+      --plane: #0d0d0d; --surface: #1a1a19;
+      --ink: #f2f2ef; --ink-2: #c3c2b7; --ink-3: #898781;
+      --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+      --acc: #3987e5; --wash: rgba(57,135,229,0.10);
+    }
+  }
+  .col { max-width: 760px; margin: 0 auto; }
+  .mono, .eyebrow, th, td.num, .fig td, .fig th {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-size: 31px; font-weight: 750; letter-spacing: -0.015em; line-height: 1.2;
+       margin: 8px 0 10px; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--ink-2); margin: 0 0 6px; max-width: 62ch; }
+  .meta { font-size: 12.5px; color: var(--ink-3); margin-bottom: 40px; }
+  .meta a { color: var(--acc); }
+  h2 { font-size: 21px; font-weight: 720; letter-spacing: -0.01em; margin: 46px 0 4px; text-wrap: balance; }
+  h2 .no { color: var(--ink-3); font-weight: 500; margin-right: 10px;
+       font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 16px; }
+  h3 { font-size: 16px; font-weight: 700; margin: 26px 0 4px; }
+  p { margin: 10px 0; max-width: 68ch; }
+  a { color: var(--acc); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  ul, ol { max-width: 66ch; padding-left: 22px; }
+  li { margin: 5px 0; }
+  strong { font-weight: 650; }
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--acc);
+    border-radius: 2px; padding: 14px 18px; margin: 18px 0; max-width: 66ch; }
+  .callout p { margin: 6px 0; }
+  .qa { background: var(--wash); border-radius: 2px; padding: 3px 6px; }
+  table.fig { border-collapse: collapse; margin: 14px 0 6px; font-size: 13px; }
+  .fig th { text-align: right; font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-3); padding: 6px 14px 6px 0; border-bottom: 1px solid var(--grid); font-weight: 500; }
+  .fig th:first-child { text-align: left; }
+  .fig td { padding: 5px 14px 5px 0; border-bottom: 1px solid var(--grid);
+    font-variant-numeric: tabular-nums; color: var(--ink-2); text-align: right; font-size: 12.5px; }
+  .fig td:first-child { text-align: left; }
+  .fig caption { caption-side: bottom; text-align: left; font-size: 12px; color: var(--ink-3);
+    padding-top: 7px; max-width: 66ch; }
+  .cap { font-size: 12px; color: var(--ink-3); }
+  hr { border: 0; border-top: 1px solid var(--grid); margin: 44px 0; }
+  .disclaim { font-size: 12.5px; color: var(--ink-3); border-top: 1px solid var(--grid);
+    margin-top: 48px; padding-top: 14px; max-width: 68ch; }
+</style>
+
+<div class="rpt"><div class="col">
+
+  <div class="eyebrow">unusual apes · settlement forensics · report · 2026-07-03</div>
+  <h1>XRT as GME’s settlement shock absorber: findings, surprises, and the shape of a predictive model</h1>
+  <p class="lede">What six years of SEC fails-to-deliver data, joined to Reg SHO threshold-list
+     residencies, actually shows — what it proves, what it doesn’t, and which clocks are real
+     enough to build a model on.</p>
+  <p class="meta">Data: SEC CNS fails-to-deliver 2019-01-02 → 2026-06-12 · NYSE/NASDAQ/CBOE threshold
+     lists 2019-10-01 → 2026-07-02 · Interactive charts:
+     <a href="exhibits.html">the exhibits page</a></p>
+
+  <h2><span class="no">0</span>Executive summary</h2>
+  <ul>
+    <li><strong>XRT has spent 37% of all trading days since October 2019 on the Reg SHO threshold
+        list</strong> — 633 of 1,697 days, across 15 residencies, 13 of them longer than the 13-day
+        close-out ceiling the rule is built around. The longest ran <strong>187 days</strong> (and is
+        left-censored: it was already running when our data begins).</li>
+    <li><strong>January 2021 is a handoff, visible in fail quantities.</strong> GME’s fails peak
+        Jan 26; the buy button dies Jan 28; XRT posts its own fails peak <em>and enters the threshold
+        list</em> Jan 29; GME’s fails collapse 94% within a week and it leaves the list Feb 3 —
+        <strong>and has not appeared on any exchange’s threshold list since, through July 2026</strong>.</li>
+    <li><strong>The biggest surprise: the close-out cliff is inverted.</strong> Fails are
+        <em>suppressed</em> in the final days of each XRT residency — exactly what the 5-clean-day
+        exit rule requires — then explode within five days of exiting, by up to <strong>×85</strong>.
+        Deliveries track the rule’s measurement windows, not economic settlement.</li>
+    <li><strong>An honest null:</strong> a fixed-lag scan (25–45 calendar days) found no clean T+35
+        cycle in fail quantities. The timing structure is <em>event-shaped</em> (list entries, exits,
+        fail clusters), not a standing calendar wave. This matters for how a predictive model should
+        be built — and for how it shouldn’t.</li>
+    <li><strong>2024 rhymes but doesn’t repeat:</strong> GME’s May 2024 fail cluster precedes the
+        price runs, but at one-quarter of 2021’s absolute size against a share count ~4× larger —
+        which is arithmetically why GME never re-listed. The pressure now travels through channels
+        the threshold list can’t see.</li>
+  </ul>
+
+  <h2><span class="no">I</span>First, the data had to be fixed</h2>
+  <p>Every number in this report sits on a pipeline that was quietly wrong until this morning,
+     and the corrections are large enough that they’re findings in their own right:</p>
+  <ul>
+    <li><strong>A stale holiday table was breaking every streak.</strong> The analysis hardcoded
+        2024–2025 market holidays only. Every 2026 holiday severed every streak: the morning report
+        showed <em>every security</em> at “9 consecutive days” — IONZ’s true streak was 247.
+        Holidays are now computed algorithmically for any year, and streak continuity is judged
+        against each exchange’s <em>observed publication calendar</em>, which also absorbs one-off
+        closures (the Carter funeral) automatically.</li>
+    <li><strong>The CBOE downloader marked unpublished days as done forever.</strong> 115 weekdays
+        sat checkpointed with zero rows; we proved recoverable data existed (2026-03-02 et al.) and
+        backfilled it. The resume logic in all three downloaders could also permanently skip a date
+        that failed while a later date succeeded — it ate CBOE’s 2026-07-02 the day before we caught it.</li>
+    <li><strong>NYSE doesn’t publish threshold lists on Columbus Day or Veterans Day</strong>
+        (equities trade; the bond market is closed). Treating those as “off the list” had split
+        XRT’s longest streak into 9 + 178; per-exchange calendars merged it to the true 187.</li>
+    <li><strong>The SEC fails dataset was 14 months stale</strong> — and the reason the “downloader
+        failed” is that there never was one: the scripts only parsed ZIPs downloaded by hand, and
+        sec.gov rejects clients without a descriptive User-Agent. A real downloader now exists;
+        1.53M rows were appended (append-only; the data repo’s git history is untouched).</li>
+  </ul>
+  <p class="cap">Moral for the paper’s methods section: threshold-list analytics are extremely
+     sensitive to calendar assumptions. Anyone replicating naïvely will understate every streak.</p>
+
+  <h2><span class="no">II</span>Findings</h2>
+
+  <h3>F1 — Residency, not visits</h3>
+  <p>The threshold list is designed as a brief penalty box: five consecutive settlement days of
+     aggregate fails ≥ 10,000 shares <em>and</em> ≥ 0.5% of shares outstanding puts you on; thirteen
+     days on triggers mandatory close-out; five clean days take you off. XRT treats it as a residence:
+     <strong>97% of its 633 listed days sit inside residencies that outlasted the 13-day ceiling.</strong>
+     Its <em>median</em> residency (17 days) exceeds the rule’s maximum.</p>
+
+  <h3>F2 — The reload cadence</h3>
+  <p>Off-list gaps between residencies are bimodal: six gaps of 7–27 trading days (the “reload”
+     cluster — the fastest possible re-qualification is ~6–7 days, so a 7-day gap means failing
+     resumed <em>immediately</em> after exit), against genuine dormant periods of 61–271 days.
+     The reload cadence is the closest thing to a predictable settlement rhythm in this data.</p>
+
+  <h3>F3 — The January 2021 handoff</h3>
+  <table class="fig">
+    <tr><th>Week of</th><th>GME fails</th><th>XRT fails</th></tr>
+    <tr><td>2021-01-18</td><td>4,218,732</td><td>51,106</td></tr>
+    <tr><td>2021-01-25</td><td>5,518,712</td><td>2,924,308</td></tr>
+    <tr><td>2021-02-01</td><td>333,911</td><td>3,265,787</td></tr>
+    <tr><td>2021-02-08</td><td>39,835</td><td>415,695</td></tr>
+    <caption>GME fails peak 2021-01-26 (2.10M). XRT fails peak 2021-01-29 (2.22M) — the same day
+    XRT enters the threshold list, one day after the buy-button removal. GME exits the list
+    2021-02-03 and never returns.</caption>
+  </table>
+  <p>The fails did not get delivered in the week retail couldn’t buy — the <em>location</em> of the
+     failure moved from the stock to the wrapper. That is what “the wrapper changed” means, precisely.</p>
+
+  <h3>F4 — The inverted cliff (the surprise)</h3>
+  <p>The naïve expectation: fails build during a residency and drop after the forced close-out.
+     The data shows the opposite in 9 of 12 completed ≥13-day residencies. Mean daily fails over the
+     last three listed days are typically 2,000–10,000 shares — then jump within five days of exit:
+     ×24, ×29, ×54, up to <strong>×85</strong> (the 2025-02→04 residency: 3,886 → 329,813/day).
+     Exit requires five consecutive clean days, and the tails show fails being managed down to
+     satisfy exactly that test, with failing resuming the moment the constraint releases. This is
+     clock management made visible: <em>deliveries are timed to the rule’s measurement windows.</em></p>
+
+  <h3>F5 — No standing T+35 wave</h3>
+  <p>Correlating fail quantities against themselves (and GME→XRT) at every calendar lag from 25 to
+     45 days produced nothing distinguishable at 35. Fixed-lag periodicity is not how this system
+     breathes; the structure is conditional on events — fail clusters, list entries, exits.
+     We publish this null deliberately: it is the rebuttal a referee would reach for first.</p>
+
+  <h3>F6 — GME’s fails have migrated out of view</h3>
+  <table class="fig">
+    <tr><th>Year</th><th>GME total reported fails</th></tr>
+    <tr><td>2019</td><td>33,130,823</td></tr>
+    <tr><td>2020</td><td>76,714,995</td></tr>
+    <tr><td>2021</td><td>24,875,439</td></tr>
+    <tr><td>2022</td><td>22,556,465</td></tr>
+    <tr><td>2023</td><td>13,467,448</td></tr>
+    <tr><td>2024</td><td>7,307,629</td></tr>
+    <tr><td>2025</td><td>15,923,794</td></tr>
+    <caption>CNS fails, shares per year. The 2020 peak is 10× the 2024 total — while XRT continued
+    to log million-share fail days into 2026.</caption>
+  </table>
+
+  <h2><span class="no">III</span>“So did XRT become an instrument of blatant manipulation after Jan 29, 2021?”</h2>
+  <p><span class="qa">Not <em>after</em> — the data says XRT was already the conduit long before.</span>
+     Its first observed residency starts on the first day of our data (Oct 1, 2019) already in
+     progress, and runs 187 days through June 2020. What January 29, 2021 marks is not the beginning
+     of the mechanism but the moment it became <strong>visible at maximum size under maximum
+     stress</strong> — the one week when the pressure had nowhere else to go, so the handoff
+     happened in the open, dated to the day.</p>
+  <p>And be precise about what the data can and cannot say, because this is where the paper wins
+     or dies:</p>
+  <ul>
+    <li><strong>What it shows:</strong> fails relocated from GME to XRT at the squeeze peak; XRT
+        persistently resident on a list designed to be escaped in 13 days; fails suppressed to
+        satisfy exit tests and resumed immediately after. These are measurements.</li>
+    <li><strong>What it cannot show:</strong> intent, identity of the failing participants, or
+        illegality. “Manipulation” is a legal conclusion; CNS data is anonymous and aggregate.</li>
+    <li><strong>The sharper claim available:</strong> none of this <em>needs</em> to be illegal —
+        that’s the indictment. Threshold close-out obligates purchase of the <em>ETF</em>, not the
+        basket; an authorized participant can satisfy it by creating new XRT shares against a basket
+        that substitutes <strong>cash in lieu</strong> for the hard-to-borrow component. The clock
+        resets and no GME share was ever bought. To your phrasing — “they press a button and choose
+        cash or the security” — yes: at the creation margin, an XRT share’s GME slice can be an IOU
+        denominated in cash, rolled for as long as the cycle keeps working. The paper’s strongest
+        form: <em>the bona-fide market-making exemption plus cash-in-lieu creation makes Rule
+        203(b)(3) unenforceable against precisely the instruments it was written for — and the
+        threshold list itself is six years of evidence.</em></li>
+  </ul>
+
+  <h2><span class="no">IV</span>The 2024 echo — same shape, different plumbing</h2>
+  <p>You’re right that mid-2024 looks like a rhyme: a fail cluster, then violent price runs. The
+     numbers, though, explain why it produced no threshold listing:</p>
+  <table class="fig">
+    <tr><th>Date (2024)</th><th>GME fails</th></tr>
+    <tr><td>05-06</td><td>186,627</td></tr>
+    <tr><td>05-07</td><td>433,054</td></tr>
+    <tr><td>05-08</td><td>525,493</td></tr>
+    <tr><td>05-09</td><td>366,850</td></tr>
+    <tr><td>05-10</td><td>223,129</td></tr>
+    <tr><td>05-14</td><td>344,501</td></tr>
+    <caption>The May 2024 cluster — the largest GME fail days of the year — sits directly in front
+    of the May 13–14 run, with the June run landing ~T+30–35 behind it.</caption>
+  </table>
+  <ul>
+    <li><strong>Scale:</strong> the 2024 peak day (525K) is one-quarter of January 2021’s (2.10M).</li>
+    <li><strong>The denominator moved:</strong> the 0.5%-of-outstanding trigger scaled with GME’s
+        share count — roughly 70M shares in January 2021 versus ~350M+ by mid-2024 (post-split,
+        post-offerings; approximate public figures). In 2021 the list trigger sat near 350K
+        fails/day <em>sustained for five days</em>; by 2024 it needed ~1.7M+/day for five straight
+        days. January 2021 ran at 3–6× its trigger; May 2024 peaked at ~0.3× of its own.
+        <strong>Dilution didn’t just fund the company — it mechanically retired GME’s ability to
+        ever appear on the threshold list again.</strong></li>
+    <li><strong>XRT stayed quiet in June 2024</strong> (no 10K+ fail day between May 14 and
+        July 15). Whatever carried the June pressure, it wasn’t XRT creations failing — options
+        (the gamma channel), swaps, or other wrappers we haven’t joined yet. The 2021 playbook is
+        one instrument in a set that has since widened.</li>
+  </ul>
+
+  <h2><span class="no">V</span>Toward a predictive model — and the Bitcoin-cycle question</h2>
+  <p>On “Bitcoin has a 1,065-day bull / 365-day bear clock, what if GME is due”: I’d steer the
+     model away from that framing, respectfully but firmly. Fixed-length cycles are pattern without
+     plumbing — with one hypothesis per cycle-length you will always find one that fits the past
+     and none that binds the future. What this dataset offers instead is rarer and better:
+     <strong>clocks with mechanisms and statutory dates</strong>. Every window below exists because
+     a rule makes someone act by a deadline:</p>
+  <table class="fig">
+    <tr><th>Clock</th><th>Length</th><th>Mechanism</th></tr>
+    <tr><td>Fail aging (deemed-to-own)</td><td>~T+35 calendar</td><td>Rule 204 close-out outer bound</td></tr>
+    <tr><td>List qualification</td><td>5 settlement days</td><td>entry test (≥10K and ≥0.5% outstanding)</td></tr>
+    <tr><td>Mandatory close-out</td><td>13 settlement days</td><td>Rule 203(b)(3) threshold close-out</td></tr>
+    <tr><td>List exit</td><td>5 clean days</td><td>drives the F4 suppression signature</td></tr>
+    <tr><td>Reload</td><td>~7–11 trading days</td><td>fastest re-qualification after exit (F2)</td></tr>
+    <tr><td>Options expiry</td><td>monthly / quarterly</td><td>hedge unwind &amp; assignment settlement</td></tr>
+  </table>
+  <p>The F5 null tells you the model must be <strong>event-conditioned, not periodic</strong>:
+     nothing echoes every 35 days, but <em>given</em> a fail cluster, obligations dated ~T+35 out
+     genuinely exist (May 2024 → June 2024 is consistent with exactly that). So the architecture
+     I’d build:</p>
+  <ol>
+    <li><strong>State variables:</strong> GME and basket-ETF daily fails; <em>distance-to-trigger</em>
+        (fails ÷ 0.5%-of-outstanding — this normalizes 2021 vs 2024 properly); XRT residency state
+        (on-list, day count, days since exit); fail-cluster age (days since last >N-share cluster).</li>
+    <li><strong>Event windows:</strong> for each detected fail cluster, project the T+35 date and the
+        first OPEX after it; treat those as elevated-probability windows rather than predictions.</li>
+    <li><strong>The F4 signature as a leading indicator:</strong> fails collapsing to near-zero
+        <em>while XRT is still listed</em> = an exit (and therefore a reload window) is being
+        engineered — that’s observable ~5 days before it completes.</li>
+    <li><strong>Cross-sectional confirmation:</strong> extend the join to the rest of the synthetic
+        basket (CHWY, IWM, retail-sector ETFs — your tracker’s README already names them). A GME
+        window that also lights up the basket is a different animal from one that doesn’t.</li>
+    <li><strong>Data still needed:</strong> daily price/volume, GME shares-outstanding history,
+        XRT creation-unit flows and shares outstanding, short interest, options OI by expiry.
+        The first two are the priority: distance-to-trigger is the single most explanatory
+        normalization this analysis surfaced.</li>
+  </ol>
+  <p>Is a “big settlement” due? The honest version: the plumbing guarantees <em>windows</em>, not
+     outcomes — pressure can always be rolled into the next wrapper, which is the core finding of
+     six years of XRT data. What a model can legitimately do is date the windows and measure how
+     much has to roll through them. As of the data’s edge (June 12), XRT is 41+ days into a live
+     residency with 100K–600K fail days and one 3.06M print on May 15 — the machine is running
+     right now, whatever the calendar says.</p>
+
+  <h2><span class="no">VI</span>Caveats, for the referee in all of us</h2>
+  <ul>
+    <li>FTD quantities end 2026-06-12; the SEC has not published May 1–15, 2026 (cnsfails202605a)
+        — the downloader will pick it up automatically if it appears.</li>
+    <li>Threshold lists run through 2026-07-02; CBOE’s 2026-07-02 file was still unpublished (403)
+        at write-time and retries automatically.</li>
+    <li>The 187-day residency is left-censored (data starts 2019-10-01 mid-streak); the true figure
+        is ≥187. NYSE’s API no longer serves 2025-10-13 / 2025-11-11; per-exchange calendars make
+        this harmless for streaks.</li>
+    <li>CNS data reports aggregate net fails at NSCC — it undercounts economic failure (ex-clearing,
+        obligation warehouses don’t appear) and cannot attribute fails to any participant.</li>
+    <li>All streak statistics depend on the per-exchange calendar correction (Part I). Replications
+        using naïve weekday or federal-holiday calendars will understate every streak.</li>
+  </ul>
+
+  <p class="disclaim">Research notes for a working paper, generated 2026-07-03 from the unusual-apes
+     pipeline (three threshold-list downloaders, market_calendar.py, forced_settle.py, the CNS fails
+     downloader/updater, and the analysis joins described above). Interactive versions of every
+     figure: <a href="exhibits.html">exhibits page</a>.
+     This is market-structure research, not investment advice; the datasets are anonymous and
+     aggregate, and no claim of unlawful conduct by any party is made or implied.</p>
+
+</div></div>
+
+</body>
+</html>
